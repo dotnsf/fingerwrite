@@ -8,7 +8,7 @@ html, body{
   border: 1px solid #333;
 }
 #result{
-  text-align: center;
+  width: 100%;
 }
 
 

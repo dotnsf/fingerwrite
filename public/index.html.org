@@ -15,9 +15,10 @@
 
 <br/>
 <input type="button" value="reset" onClick="resetCanvas();"/>
-<input type="button" value="fingerwrite" onClick="searchChar();"/>
 
-<div><textarea id="result"></textarea></div>
+<div align="right">
+Try <a href="./new.html">new one</a>.
+</div>
 
 </body>
 </html>

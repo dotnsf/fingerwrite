@@ -135,10 +135,14 @@ function searchChar(){
         debugText( data );
       }else{
         var json = JSON.parse( data );
-        var images = json.similar_images;
-        if( images && images.length > 0 ){
-          var image = images[0];
-          $('#result').append( image.metadata.letter );
+        if( json.similar_images ){
+          var similar_images = json.similar_images;
+          if( similar_images && similar_images.length > 0 ){
+            var similar_image = similar_images[0];
+            if( similar_image && similar_image.metadata && similar_image.metadata.letter ){
+              $('#result').append( similar_image.metadata.letter );
+            }
+          }
         }
       }
     },
