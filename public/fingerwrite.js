@@ -1,3 +1,5 @@
+var waiting = false;
+var waitms = 2000;
 $(function(){
   var canvas = document.getElementById( 'mycanvas' );
   if( !canvas || !canvas.getContext ){
@@ -18,6 +20,7 @@ $(function(){
     var rect = e.target.getBoundingClientRect();
     mouse.x = e.clientX - rect.left - borderWidth;
     mouse.y = e.clientY - rect.top - borderWidth;
+    waiting = false;
 
     if( mouse.isDrawing ){
       ctx.beginPath();
@@ -34,12 +37,18 @@ $(function(){
     mouse.isDrawing = true;
     mouse.startX = mouse.x;
     mouse.startY = mouse.y;
+
+    waiting = false;
   });
   canvas.addEventListener( "mouseup", function( e ){
     mouse.isDrawing = false;
+    waiting = true;
+    setTimeout( 'waited()', waitms );
   });
   canvas.addEventListener( "mouseleave", function( e ){
     mouse.isDrawing = false;
+    waiting = true;
+    setTimeout( 'waited()', waitms );
   });
 
   canvas.addEventListener( "touchmove", function( e ){
@@ -47,6 +56,7 @@ $(function(){
     var rect = t.target.getBoundingClientRect();
     mouse.x = t.pageX - rect.left - borderWidth;
     mouse.y = t.pageY - rect.top - borderWidth;
+    waiting = false;
 
     if( mouse.isDrawing ){
       ctx.beginPath();
@@ -65,9 +75,12 @@ $(function(){
     mouse.isDrawing = true;
     mouse.startX = t.pageX - rect.left - borderWidth;
     mouse.startY = t.pageY - rect.top - borderWidth;
+    waiting = false;
   });
   canvas.addEventListener( "touchend", function( e ){
     mouse.isDrawing = false;
+    waiting = true;
+    setTimeout( 'waited()', waitms );
   });
 
   //. スクロール禁止
@@ -89,6 +102,8 @@ function resetCanvas(){
   ctx.fillStyle = "rgb( 255, 255, 255 )";
   ctx.fillRect( 0, 0, 300, 300 );
   ctx.stroke();
+
+  waiting = false;
 }
 
 function searchChar(){
@@ -156,4 +171,10 @@ function debugText( txt ){
   $('#debug').html( txt );
 }
 
+function waited(){
+  if( waiting ){
+    waiting = false;
+    searchChar();
+  }
+}
 
