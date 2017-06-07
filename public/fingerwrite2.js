@@ -1,6 +1,16 @@
+var deviceid = null;
+var devicetype = "FingerWriteClient";
+var eventtype = null;
+var client;
+var pubTopic = 'iot-2/evt/status/fmt/json';
+var clientData = {};
+clientData.d = {};
+
 var waiting = false;
-var waitms = 2000;
+var waitms = 1000;
 $(function(){
+  getDeviceId();
+
   var canvas = document.getElementById( 'mycanvas' );
   if( !canvas || !canvas.getContext ){
     return false;
@@ -83,6 +93,12 @@ $(function(){
     e.preventDefault();
   });
 
+
+  var clientID = 'd:quickstart:' + devicetype + ':' + deviceid;
+  client = new Messaging.Client( 'quickstart.messaging.internetofthings.ibmcloud.com', 443, clientID );
+  client.onConnectionLost = onConnectionLost;
+  client.connect( { onSuccess: onConnect, onFailure: onConnectFailure, useSSL: true } );
+
   resetCanvas();
 });
 
@@ -151,6 +167,8 @@ function searchChar(){
             var similar_image = similar_images[0];
             if( similar_image && similar_image.metadata && similar_image.metadata.letter ){
               $('#result').append( similar_image.metadata.letter );
+
+              publishMessage( similar_image.metadata.letter );
             }
           }
         }
@@ -171,5 +189,81 @@ function waited(){
     waiting = false;
     //searchChar();
   }
+}
+
+
+function publishMessage( letter ){
+  if( deviceid != null ){
+    var d = {};
+    d['letter'] = letter;
+
+    clientData.d = d;
+    clientData.publish();
+  }
+}
+
+function onConnect(){
+  console.log( "Connected." );
+}
+
+function onConnectFailure( error ){
+  console.log( "Connect Failed." );
+  console.log( error.errorCode );
+  console.log( error.errorMessage );
+}
+
+function onConnectionLost( response ){
+  console.log( "Connect Lost." );
+  if( response.errorCode !== 0 ){
+    console.log( " :" + response.errorMessage );
+  }
+  client.connect( { onSuccess: onConnect, onFailure: onConnectFailure } );
+}
+
+clientData.toJson = function(){
+  return JSON.stringify( this );
+}
+
+clientData.publish = function(){
+  var message = new Messaging.Message( clientData.toJson() );
+  message.destinationName = pubTopic;
+  client.send( message );
+}
+
+
+function getDeviceId(){
+  var did = null;
+  cookies = document.cookie.split( '; ' );
+  for( i = 0; i < cookies.length; i ++ ){
+    str = cookies[i].split( '=' );
+    if( unescape( str[0] ) == 'deviceid' ){
+      did = unescape( unescape( str[1] ) );
+    }
+  }
+
+  if( did != null ){
+    deviceid = did;
+  }else{
+    deviceid = generateDeviceId();
+  }
+
+  $('#deviceid').html( deviceid );
+  document.title = deviceid;
+}
+
+function generateDeviceId(){
+  var did = '';
+  var hx = '0123456789abcdef';
+  for( i = 0; i < 12; i ++ ){
+    var n = Math.floor( Math.random() * 16 );
+    if( n == 16 ){ n = 15; }
+    c = hx.charAt( n );
+    did += c;
+  }
+
+  var str = "deviceid=" + did;
+  document.cookie = str;
+
+  return did;
 }
 

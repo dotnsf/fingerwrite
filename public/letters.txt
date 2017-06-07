@@ -1,0 +1,20 @@
+<html>
+<head>
+<script>
+var socket;
+var wsUrl = 'wss://' + location.hostname + '/ws/c';
+function connect(){
+  socket = new WebSocket( wsUrl );
+  socket.onmessage = function( e ){
+    var data = JSON.parse( e.data );
+    //console.log( data );
+    if( data.d && data.d.letter ){
+      document.getElementById( 'body' ).append( data.d.letter );
+    }
+  }
+}
+</script>
+<body id='body' onload='connect()'>
+</body>
+</html>
+

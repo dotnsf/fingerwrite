@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>フィンガーライト</title>
+<script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+<script type="text/javascript" src="./mqttws31.js"></script>
+<script type="text/javascript" src="./fingerwrite2.js"></script>
+<link rel="stylesheet" href="./fingerwrite.css"/>
+</head>
+<body>
+<h3 id="deviceid">************</h3>
+
+<canvas width="300" height="300" id="mycanvas"></canvas>
+
+<br/>
+<input type="button" value="reset" onClick="resetCanvas();"/>
+<input type="button" value="fingerwrite" onClick="searchChar();"/>
+
+<div><textarea id="result"></textarea></div>
+
+</body>
+</html>
+
+
